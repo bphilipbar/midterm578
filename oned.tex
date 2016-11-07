@@ -107,11 +107,7 @@ We expect the following quantities to be conserved: mass h, momentum or mass vel
 energy 0.5($hv^2$+$gh^2$). Potential vorticity is only looked at in the 2D solver. Invesigation of conservation of momentum in solver.
  Is the momentum conserved, what explanation do we have?
 
-TO DO 1D FIGURES!!!
-
-
-
-The spatial domain for the 2D solver is \(\Omega =[{  }1]\times [{  }1].\) To go about solving the system in 2D there are many options,
+The spatial domain for the 2D solver is $\Omega [1\;\;1]$ To go about solving the system in 2D there are many options,
 we compare two schemes. Lax-Wendfoff, and a two step version of Richtmeyer proposed. \newline
 \newline
 
@@ -132,7 +128,7 @@ t}{\Delta x} B_{i,j-1/2}^* ) D_{\_}^y F_{i,j}^* )
 
 \subsection{Two-Step Lax-Wendroff Method (Richtmeyer)}
 
-Richtmeyer proposed a two-step version of the Lax-Wendroff method, which is much simpler than the original, especially in multi-dimensional problems.
+Richtmeyer proposed a two-step version of the Lax-Wendroff method \cite{Roach}, which is much simpler than the original, especially in multi-dimensional problems.
 The first step uses Lax's  method and the second step is a midpoint leapfrog calculation. 
 
 \begin{equation}\label{eqn:8}
@@ -157,7 +153,8 @@ U_{i}^{n+1} = \frac{1}{4} \Big( U_{i+1,j}^{n} + U_{i-1,j}^{n} + U_{i,j+1}^{n} + 
 - (\Delta t) \Big( \frac{ F_{i+1,j}^{n} - F_{i-1,j}^{n} }{2 \Delta x}  + \frac{ G_{i,j+1}^{n} - G_{i,j-1}^{n} }{ 2 \Delta x }  \Big)
 \end{dmath} 
 
-This 2D-scheme requires about a fourth of the computational time as the original Lax-Wendroff method, and produces less shock overshoot than the orignal. 
+This 2D-scheme requires about a fourth of the computational time as the original Lax-Wendroff method \cite{Roach}, and produces less shock
+ overshoot than the orignal. 
 \newline
 
 The boundary conditions are prescribed for two cases. The first, periodic for both $h$, $hu$, and $hv$, and the second,
@@ -233,6 +230,7 @@ fabulas lucilius.
 Vel timeam fuisset te. Duo ea nobis omnium pericula, sed discere scripserit ei, mea an illud dolore adolescens.
  Eu cum eligendi voluptatum, brute lobortis eam an, ea mei fastidii complectitur. An causae accusam pri. 
  In ius possit oportere.ges:
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
