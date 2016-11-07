@@ -1,6 +1,6 @@
 
 \section{2D Solver}
-The spatial domain for the 2D solver is $\Omega [1\;\;1]$ To go about solving the system in 2D there are many options,
+The spatial domain for the 2D solver is $\Omega=[0,1]\times[0,1]$ To go about solving the system in 2D there are many options,
 we compare two schemes. Lax-Wendfoff, and a two step version of Richtmeyer proposed. \newline
 \newline
 
@@ -30,7 +30,7 @@ The first step uses Lax's  method and the second step is a midpoint leapfrog cal
 U_{i}^{n+1} = \frac{1}{2}(U_{i+1}^{n}+U_{i-1}^{n})-\Delta{t} \Big(\frac{F_{i+1}^{n}-F_{i-1}^{n}}{2\Delta x}\Big)
 \end{equation}
 \begin{equation}\label{eqn:9}
-U_{i}^{n+2} = U_{i}^{n} + (2\Delta t) \Big ( \frac{ F_{i+1}^{n+1}-F_{i-1}^{n+1} }{ 2 \Delta x } \Big)
+U_{i}^{n+2} = U_{i}^{n+1} + (2\Delta t) \Big ( \frac{ F_{i+1}^{n+1}-F_{i-1}^{n+1} }{ 2 \Delta x } \Big)
 \end{equation} 
 \newline
 
@@ -44,8 +44,12 @@ The extension to multiple dimensions is obvious and neat.
 \end{equation}
 
 \begin{dmath}\label{eqn:11}
-U_{i}^{n+1} = \frac{1}{4} \Big( U_{i+1,j}^{n} + U_{i-1,j}^{n} + U_{ij+1}^{n} + U_{ij-1}^{n} \Big) 
+U_{ij}^{n+1} = \frac{1}{4} \Big( U_{i+1,j}^{n} + U_{i-1,j}^{n} + U_{ij+1}^{n} + U_{ij-1}^{n} \Big) 
 - (\Delta t) \Big( \frac{ F_{i+1,j}^{n} - F_{i-1,j}^{n} }{2 \Delta x}  + \frac{ G_{ij+1}^{n} - G_{ij-1}^{n} }{ 2 \Delta y }  \Big)
+\end{dmath}
+\begin{dmath}\label{eqn:11_1}
+U_{ij}^{n+2} = U_{i,j}^{n+1} -
+  (2\Delta t) \Big( \frac{ F_{i+1,j}^{n+1} - F_{i-1,j}^{n+1} }{2 \Delta x}  + \frac{ G_{ij+1}^{n+1} - G_{ij-1}^{n+1} }{ 2 \Delta y }  \Big)
 \end{dmath} 
 
 This 2D-scheme requires about a fourth of the computational time as the original Lax-Wendroff method \cite{Roach}, and produces less shock
