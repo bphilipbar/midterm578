@@ -1,4 +1,54 @@
 \section{Conservation}
+
+
+\subsection{1D Conservation Laws}
+We expect the following quantities to be conserved: mass h, momentum or mass velocity, $hu$ and $hv$, and
+energy 0.5($hv^2$+$gh^2$). Potential vorticity is only looked at in the 2D solver. 
+\newline
+
+Invesigation of conservation laws in the 1D solver shows differences
+between the conserved quantities. The solution array and time vector in the 1D solver define $U$ using
+ a final index $x$, that is not physical $-$\textit{ghost point}, but is used for the periodic boundary 
+ conditions. The mass is hypothetically guessed to be strictly conserved by the scheme, the momentum should also
+ be strictly conserved by the scheme, unless there are reflections when the walls take some of the momentum. Lastly,
+ the energy is of course physically conserved, but the inherent nature of the numerical scheme does not initially
+capture this. Analysis shows energy conservation converges, which suggests after the intial transfer of potential energy
+to kinetic energy produced by the initial conditions, the scheme is able to restore conservation. 
+\newline
+
+
+\begin{figure}[h!]
+    \centering
+    \begin{subfigure}[b]{0.312\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{images/E1d.eps}\hfill
+        \caption{Energy}
+        \label{fig:Energy}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{images/Ma1d.eps}\hfill
+        \caption{Mass}
+        \label{fig:Mass}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{images/Mo1d.eps}\hfill
+        \caption{Momentum}
+        \label{Momentum}
+    \end{subfigure}
+    \caption{1D conservation plots.}
+    \label{fig:three graphs}
+\end{figure}
+
+
+
+
+
+
+
 \begin{figure}[h!]
     \centering
     \begin{subfigure}[b]{0.46\textwidth}
