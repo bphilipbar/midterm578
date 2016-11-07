@@ -1,0 +1,52 @@
+\documentclass{article}
+
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{color}
+\usepackage{breqn}
+\usepackage{enumitem}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage[makeroom]{cancel}
+\usepackage{listings}
+\usepackage{mathtools}
+\graphicspath{{/Users/bphilip/Documents/math578/BRADsCode/midterm/images/}}
+
+
+%\usepackage{apacite}
+
+\makeatletter
+\newcommand\incircbin
+{%
+ \mathpalette\@incircbin
+}
+\newcommand\@incircbin[2]
+{%
+ \mathbin%
+ {%
+   \ooalign{\hidewidth$#1#2$\hidewidth\crcr$#1\bigcirc$}%
+ }%
+}
+\newcommand{\oeq}{\incircbin{=}}
+\newcommand{\ole}{\incircbin{\le}}
+\newcommand\Ccancel[2][black]{\renewcommand\CancelColor{\color{#1}}\cancel{#2}}
+
+\makeatother
+
+
+\title{Midterm Project: Numerical Solutions of Shallow Water Equations}
+\author{Oleksii Beznosov and Brad Philipbar}
+\date{\today}
+
+
+\begin{document}
+\maketitle
+\begin{flushleft}
+\newpage
+
+\include{oned}
+
+\end{flushleft}
+
+
+\end{document}
