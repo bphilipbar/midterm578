@@ -1,106 +1,4 @@
 
-\section{Introduction}
-\par
-
-Shallow Water Equations model the propagation of disturbances in water and other incompressible fluids and are used to describe the 
-dynamics of important phenomenon like tsunami.The underlying assumption is that the depth of the fluid is small compared to 
-the wave length of the disturbance. The conservative form of the shallow water equations is,
-
-\begin{equation}\label{eqn:1}
-{\frac{\partial h}{\partial t} + \frac{\partial (hu)}{\partial x} + \frac{\partial (hv)}{\partial y} = 0 } \notag
-\end{equation}
-\begin{equation}
-{\frac{\partial (hu)}{\partial t} + \frac{\partial (hu^2 + \frac{1}{2} gh ^2)}{\partial x} + \frac{\partial (huv)}{\partial y} = fhv }
-\end{equation}
-\begin{equation}
-{\frac{\partial (hv)}{\partial t} + \frac{\partial (huv)}{\partial x}+\frac{\partial (hv^2 + \frac{1}{2} gh ^2)}{\partial y}=-fhu } \notag
-\end{equation}
-
-Here $h$ $\ge$ 0 is the fluid height, $u$ and $v$ are the horizontal and vertical velocities, $g$ is the acceleration due to gravity (9.8m/s2 on Earth) 
-and $f$ is the Coriolis force. We let
-
-
-\[U = \begin{bmatrix} h \\ hu \\ hv\end{bmatrix},\,\, F(U) = \begin{bmatrix} hu \\ hu^2 +  \frac{1}{2} gh^2 \\ huv \end{bmatrix},\,\,
-G(U) = \begin{bmatrix} hv \\ huv \\ hv2 +  \frac{1}{2} gh^2 \end{bmatrix},\,\, 
-S(U) = \begin{bmatrix} 0 \\ fhv \\ -fhu \end{bmatrix}, \]
-
-
-which can now be rewritten in a more compact form,
-\begin{equation}
- {\frac{\partial U}{\partial t} + \frac{\partial F(U)}{\partial x} + \frac{\partial G(U)}{\partial y} = S(U) } \label{eqn:2}
- \end{equation}
-
- 
-In the absence of the Coriolis force, we get the standard form of the conservation law,
-\begin{equation}
-{\frac{\partial U}{\partial t} + \frac{\partial F(U)}{\partial x} + \frac{\partial G(U)}{\partial y} = 0 } \label{eqn:3}
-\end{equation}
-We specify either periodic boundary condition, or ``free boundary'' conditions for $h$ and ``reflective'' boundary conditions for $uh$ and $uv$.
-Free boundary conditions mean the boundary exerts no stress, while reflective boundary conditions mean the boundary behaves like a mirror.
-
-\section{1D Solver}
-\par Consider the shallow water equations in one dimension,
-
-\begin{equation}
-\frac{\partial U}{\partial t} + \frac{\partial F(U)}{\partial x} = 0,
-\end{equation}
-
-where $U = [h, hu]^T$ and $F(U) = [hu,\,\, hu^2 + \frac{1}{2} + gh^2]^T$. Define $q(x,t) = u(x,t) h(x,t)$ so we have
-
-\[U = \begin{bmatrix} h, \\ q\end{bmatrix},\,\, F(U) = \begin{bmatrix} q,\\ \frac{q^2}{h} + \frac{1}{2} gh^2 \end{bmatrix}.\]
-
-Let $A$ be a Jacobian of $F(U)$. Thus
-
-\begin{equation}
-A = \begin{bmatrix} 0 & 1 \\ -\frac{q^2}{h^2} + gh & \frac{2q}{h}\end{bmatrix}
-\end{equation}
-
-with eigenvalues $\lambda = \frac{q}{h} \pm \sqrt{gh}.$ Since $h(x,t) > 0$ and $g$ is a positive constant eigenvalues of the Jacobian are
-real and distinct (i.e A has full set of eigenvectors). Hence, the system is hyperbolic. \newline
-
-The Lax-Wendroff method for equation (4) is,
-\begin{equation}\label{eqn:4}
-U_i^{n+1}=U_i^n-\frac{{\Delta t}}{2}((I-\frac{{\Delta t}}{{\Delta x}}A_{i+1/2}^n)(D_+F_i^n)+((I+\frac{{\Delta
-t}}{{\Delta x}}A_{i-1/2}^n)(D_{\_}F_i^n).
-\end{equation}
-where \(F_i^n=F(U_i^n), A_{i+1/2}\) is the Jacobian matrix of F evaluated at \(U_{i+1/2}\) and \(D_+\) and \(D_-\) are the standard forward
-and backward difference operators defined as,
-\begin{equation}\label{eqn:5}
-D_{\pm }w(x)=\frac{\pm w(x\pm {\Delta x})-\pm w(x))}{{\Delta x}}. 
-\end{equation}
-
-Assuming we have \(N_x\) points in the x-direction with \(\Omega =[0\;1]\), and \(1\leq i\leq n\), periodic boundary
-conditions can be imposed by \(U_1=U_{N_x}\), reflective boundary conditions at\(x=0\) by \(U_1=-U_2\), and free boundary conditions at \(x=0\) by
-\(U_1=U_2\). These equations describe how conditions are imposed on the entire vector U, here we implement reflective boundary
-conditions for hu and free boundary conditions for h. The intial conditions are chosen to be interesting, such that $h=4+sin(2$pi$x)$ for $u=0$, and
- $h=e^{-(\frac{x-\mu }{\sigma })^2}for \; u=0$. \newline
-
-\begin{figure}[htp]
-    \centering
-    \begin{subfigure}[b]{0.312\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{images/E1d.eps}\hfill
-        \caption{Energy}
-        \label{fig:Energy}
-    \end{subfigure}
-    \hfill
-    \begin{subfigure}[b]{0.32\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{images/Ma1d.eps}\hfill
-        \caption{Mass}
-        \label{fig:Mass}
-    \end{subfigure}
-    \hfill
-    \begin{subfigure}[b]{0.32\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{images/Mo1d.eps}\hfill
-        \caption{Momentum}
-        \label{Momentum}
-    \end{subfigure}
-    \caption{1D conservation plots.}
-    \label{fig:three graphs}
-\end{figure}
-
 \section{2D Solver}
 \subsection{1D Conservation Laws}
 We expect the following quantities to be conserved: mass h, momentum or mass velocity, $hu$ and $hv$, and
@@ -222,6 +120,8 @@ interestingly forming a cylindrical column.
     \label{fig:three graphs}
 \end{figure}
 
+
+
 Lorem ipsum dolor sit amet, ad vix saperet mediocrem consetetur, ut admodum torquatos maiestatis est, 
 no aeque singulis interpretaris sea. Ut paulo petentium eum, eum id malorum dignissim. Sed ex modus quodsi. 
 Simul commodo scribentur ne has, mei ei dico interpretaris. Iriure tibique gloriatur vim an. Mea ea idque 
@@ -230,20 +130,3 @@ fabulas lucilius.
 Vel timeam fuisset te. Duo ea nobis omnium pericula, sed discere scripserit ei, mea an illud dolore adolescens.
  Eu cum eligendi voluptatum, brute lobortis eam an, ea mei fastidii complectitur. An causae accusam pri. 
  In ius possit oportere.ges:
-
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%Bibiography
-
-\begin{thebibliography}{1}
-
-\bibitem{Leveque}  Leveque, R. J. {\\Finite Volume Methods for Hyperbolic Problems} 2002:
-Cambridge University Press, N.Y.
-
-\bibitem{Roach} Roach, P. J. {\\Computational Fluid Dynamics} 1985: Hermosa Publishers. Albuquerque, N.M.
-
-\bibitem{fo} Bob Tadashi Wakabayashi {\em Anti-Foreignism and Western
-Learning in Early-Modern Japan} 1986: Harvard University Press.
-
-\end{thebibliography}
