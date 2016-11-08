@@ -1,0 +1,690 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#ifndef R_ADP
+#define R_ADP
+#endif
+
+typedef double real;
+
+const int Nx = 100;
+const int Ny = 100;
+const int Nt = 2000;
+
+const real X = 1.;
+const real Y = 1.;
+
+const real g = 9.8;
+const real gamma_visc = 0.0;
+FILE* fout3;
+
+
+real I[5];
+real Ip[5];
+
+real dx;
+real dy;
+real dt;
+
+real* h;
+real* hu;
+real* hv;
+
+real* hnext;
+real* hunext;
+real* hvnext;
+
+real* ht;
+real* hut;
+real* hvt;
+
+real cf(real y)
+{
+    return 5. * y + 2.;//y;
+}
+
+
+real ic_h(real x, real y)
+{
+    x = x -0.3;
+    y = y -0.3;
+   if (x * x + y * y < 0.01) return 8.;
+   return 1.0;
+
+    //  return 8*exp(-50*x*x -50*y*y) + 2.;
+}
+
+real ic_hu(real x, real y)
+{
+    return 0.;
+}
+
+real ic_hv(real x, real y)
+{
+    return 0.;
+}
+
+void ffun(real* res, int i, int j)
+{
+    real h_ = h[i + 1 + (j + 1) * (Nx + 1)];
+    real hu_ = hu[i + 1 + (j + 1) * (Nx + 1)];
+    real hv_ = hv[i + 1 + (j + 1) * (Nx + 1)];
+    res[0] = hu_ ;
+    res[1] = hu_*hu_ / h_ + 0.5*g * h_*h_;
+    res[2] = hu_*hv_ / h_ ;
+}
+
+void gfun(real* res, int i, int j)
+{
+    real h_ = h[i + 1 + (j + 1) * (Nx + 1)];
+    real hu_ = hu[i + 1 + (j + 1) * (Nx + 1)];
+    real hv_ = hv[i + 1 + (j + 1) * (Nx + 1)];
+    res[0] = hv_ ;
+    res[1] = hu_*hv_ / h_;
+    res[2] = hv_*hv_ / h_ +  0.5*g * h_*h_ ;
+}
+
+void fpfun(real* res, int i, int j)
+{
+    real res1[3];
+    ffun(res,i,j);
+    ffun(res1,i+1,j);
+    for (int k = 0; k < 3; ++k)
+    {
+        res[k] = (res1[k] - res[k]) / dx;
+    }
+}
+
+void fmfun(real* res, int i, int j)
+{
+    fpfun(res,i-1,j);
+}
+
+void fcfun(real* res, int i, int j)
+{
+    real res1[3];
+    ffun(res,i-1,j);
+    ffun(res1,i+1,j);
+    for (int k = 0; k < 3; ++k)
+    {
+        res[k] = (res1[k] - res[k]) / (2*dx);
+    }
+}
+
+
+void gpfun(real* res, int i, int j)
+{
+    real res1[3];
+    gfun(res,i,j);
+    gfun(res1,i,j+1);
+    for (int k = 0; k < 3; ++k)
+    {
+        res[k] = (res1[k] - res[k]) / dy;
+    }
+}
+
+void gmfun(real* res, int i, int j)
+{
+    gpfun(res,i,j-1);
+}
+
+void gcfun(real* res, int i, int j)
+{
+    real res1[3];
+    gfun(res,i,j-1);
+    gfun(res1,i,j+1);
+    for (int k = 0; k < 3; ++k)
+    {
+        res[k] = (res1[k] - res[k]) / (2*dy);
+    }
+}
+
+void fjac(real* res, int i, int j, real* h, real* hu, real* hv)
+{
+    real h_  = h[i + 1 + (j + 1) * (Nx + 1)];
+    real hu_ = hu[i + 1 + (j + 1) * (Nx + 1)];
+    real hv_ = hv[i + 1 + (j + 1) * (Nx + 1)];
+    res[0] = 0.; res[1] = 1.; res[2] = 0.;
+    res[3] = -hu_*hu_ /h_/h_ + g*h_; 
+    res[4] = 2.*hu_ /h_ ; 
+    res[5] = 0.;
+    res[6] = -hu_*hv_/h_/h_; res[7] = hv_/h_; res[8] = hu_/h_;
+}
+
+void gjac(real* res, int i, int j, real* h, real* hu, real* hv)
+{
+    real h_ = h[i + 1 + (j + 1) * (Nx + 1)];
+    real hu_ = hu[i + 1 + (j + 1) * (Nx + 1)];
+    real hv_ = hv[i + 1 + (j + 1) * (Nx + 1)];
+    res[0] = 0.; res[1] = 0.; res[2] = 1.;
+    res[3] = -hu_*hv_/h_/h_; res[4] = hv_/h_; res[5] = hu_/h_;
+    res[6] = -hv_*hv_/h_/h_ + g*h_; 
+    res[8] = 0.;
+    res[7] = 2.*hv_ /h_ ; 
+}
+
+void ImM(real* A)
+{
+    for (int i = 0; i < 9; ++i)
+    {
+        A[i] *= dt/dx;
+        A[i] = i%4 > 0 ? -A[i] : 1.-A[i];
+    }
+}
+void IpM(real* A)
+{
+    for (int i = 0; i < 9; ++i)
+    {
+        A[i] *= dt/dx;
+        A[i] = i%4 > 0 ? A[i] : 1.+A[i];
+    }
+}
+void Ap(real* res, int i,int j)
+{
+    real res1[9];
+    fjac(res,  i,j, h, hu, hv);
+    fjac(res1, i+1,j, h, hu, hv);
+
+    for (int c = 0; c < 9; ++c)
+    {
+        res[c] = (res[c] + res1[c])/2.;
+    }
+}
+
+void Am(real* res, int i,int j)
+{
+    Ap(res, i-1, j);
+}
+
+void Bp(real* res, int i,int j)
+{
+    real res1[9];
+    gjac(res,  i,j, h, hu, hv);
+    gjac(res1, i,j+1,h, hu, hv);
+
+    for (int c = 0; c < 9; ++c)
+    {
+        res[c] = (res[c] + res1[c])/2. ;
+    }
+}
+
+void Bm(real* res, int i,int j)
+{
+    Bp(res, i, j-1);
+}
+
+void dot(real* res, real M[9], real v[3])
+{
+    res[0] = M[0] * v[0] + M[1] * v[1] + M[2] * v[2];
+    res[1] = M[3] * v[0] + M[4] * v[1] + M[5] * v[2];
+    res[2] = M[6] * v[0] + M[7] * v[1] + M[8] * v[2]; 
+}
+
+real centDiffx(real* u, int i, int j)
+{
+    return (u[i+2 + (Nx+1)*(j+1)] - u[i + (Nx+1)*(j+1)])/(2.*dx);
+}
+
+real centDiffy(real* u, int i, int j)
+{
+    return (u[i+1 + (Nx+1)*(j+2)] - u[i+1 + (Nx+1)*(j)])/(2.*dx);
+}
+
+void updateBC();
+
+real integrate(real *q)
+{
+    real res = 0.;
+    for(int j = 0; j < Ny-1; ++j)
+    for(int i = 0; i < Nx-1; ++i)
+    {
+        res += q[i+1 + (j+1)* (Nx+1)];
+    }
+    // for(int i = 1; i < Nx-2; ++i)
+    // {
+    //     res += 0.5*q[1 + (i+1)* (Nx+1)];
+    //     res += 0.5*q[Nx-1 + (i+1)* (Nx+1)];
+    //     res += 0.5*q[i+1 + (1)* (Nx+1)];
+    //     res += 0.5*q[i+1 + (Ny-1)* (Nx+1)];
+    // }
+
+    // res += 0.25*(q[1 + (1)* (Nx+1)] + q[Nx-1 + (1)* (Nx+1)] + q[1 + (Nx-1)* (Nx+1)] + 0.5*q[Nx-1 + (Nx-1)* (Nx+1)]);
+    return res;
+}
+
+real integrateenegy()
+{
+    real res = 0.;
+    for(int j = 0; j < Ny-1; ++j)
+    for(int i = 0; i < Nx-1; ++i)
+    {
+        res += (hu[i+1 + (j+1)* (Nx+1)]*hu[i+1 + (j+1)* (Nx+1)] +
+                hv[i+1 + (j+1)* (Nx+1)]*hv[i+1 + (j+1)* (Nx+1)])/h[i+1 + (j+1)* (Nx+1)] +
+                g*h[i+1 + (j+1)* (Nx+1)]*h[i+1 + (j+1)* (Nx+1)];
+    }
+    // for(int i = 1; i < Nx-2; ++i)
+    // {
+    //     res += 0.5*(hu[1 + (i+1)* (Nx+1)]*hu[1 + (i+1)* (Nx+1)] +
+    //             hv[1 + (i+1)* (Nx+1)]*hv[1 + (i+1)* (Nx+1)])/h[1 + (i+1)* (Nx+1)] +
+    //             g*h[1 + (i+1)* (Nx+1)]*h[1 + (i+1)* (Nx+1)];
+    //     res += 0.5*(hu[i+1 + (1)* (Nx+1)]*hu[i+1 + (1)* (Nx+1)] +
+    //             hv[i+1 + (1)* (Nx+1)]*hv[i+1 + (1)* (Nx+1)])/h[i+1 + (1)* (Nx+1)] +
+    //             g*h[i+1 + (1)* (Nx+1)]*h[i+1 + (1)* (Nx+1)];
+    //     res += 0.5*(hu[i+1 + (Ny-1)* (Nx+1)]*hu[i+1 + (Ny-1)* (Nx+1)] +
+    //             hv[i+1 + (Ny-1)* (Nx+1)]*hv[i+1 + (Ny-1)* (Nx+1)])/h[i+1 + (Ny-1)* (Nx+1)] +
+    //             g*h[i+1 + (Ny-1)* (Nx+1)]*h[i+1 + (Ny-1)* (Nx+1)];
+    //     res += 0.5*(hu[Nx-1 + (i+1)* (Nx+1)]*hu[Nx-1 + (i+1)* (Nx+1)] +
+    //             hv[Nx-1 + (i+1)* (Nx+1)]*hv[Nx-1 + (i+1)* (Nx+1)])/h[Nx-1 + (i+1)* (Nx+1)] +
+    //             g*h[Nx-1 + (i+1)* (Nx+1)]*h[Nx-1 + (i+1)* (Nx+1)];
+    // }
+
+    // res += 0.25*((hu[1 + (1)* (Nx+1)]*hu[1 + (1)* (Nx+1)] +
+    //               hv[1 + (1)* (Nx+1)]*hv[1 + (1)* (Nx+1)])/h[1 + (1)* (Nx+1)] +
+    //              g*h[1 + (1)* (Nx+1)]* h[1 + (1)* (Nx+1)] +
+    //              (hu[1 + (Ny-1)* (Nx+1)]*hu[1 + (Ny-1)* (Nx+1)] +
+    //               hv[1 + (Ny-1)* (Nx+1)]*hv[1 + (Ny-1)* (Nx+1)])/h[1 + (Ny-1)* (Nx+1)] +
+    //              g*h[1 + (Ny-1)* (Nx+1)]* h[1 + (Ny-1)* (Nx+1)] +
+    //              (hu[(Nx-1) + (Ny-1)* (Nx+1)]*hu[(Nx-1) + (Ny-1)* (Nx+1)] +
+    //               hv[(Nx-1) + (Ny-1)* (Nx+1)]*hv[(Nx-1) + (Ny-1)* (Nx+1)])/h[(Nx-1) + (Ny-1)* (Nx+1)] +
+    //              g*h[(Nx-1) + (Ny-1)* (Nx+1)]* h[(Nx-1) + (Ny-1)* (Nx+1)] +
+    //              (hu[(Nx-1) + (Nx+1)]*hu[(Nx-1) +  (Nx+1)] +
+    //               hv[(Nx-1) + (Nx+1)]*hv[(Nx-1) +  (Nx+1)])/h[(Nx-1) + (Nx+1)] +
+    //              g*h[(Nx-1) + (Nx+1)]* h[(Nx-1) +  (Nx+1)]);
+    return 0.5 * res;
+}
+
+real integratevort()
+{
+    real res = 0.;
+    for(int j = 0; j < Ny-1; ++j)
+    for(int i = 0; i < Nx-1; ++i)
+    {
+        real x = i*dx;
+        real y = j*dy;
+        res += (hv[i+2 + (j+1)* (Nx+1)] - hv[i + (j+1)* (Nx+1)])/(2*dx)-
+               (hu[i+1 + (j+2)* (Nx+1)] - hu[i+1 + (j)* (Nx+1)])/(2*dy);
+
+        //res += x*hv[i+1 + (j+1)* (Nx+1)] - y*hu[i+1 + (j+1)* (Nx+1)];
+    }
+
+    return 0.5 * res;
+}
+
+
+void printsol(int);
+
+real T = 0.;
+
+
+void advInTime()
+{
+    for (int j = 0; j < Ny - 1; ++j)
+    for (int i = 0; i < Nx - 1; ++i)
+    {
+        real x = i*dx;
+        real y = j*dy;
+        real matl[9];
+        real vecl[3];
+        real matr[9];
+        real vecr[3];
+        real resl[3];
+        real resr[3];
+
+        real htemp = 0., hutemp = 0., hvtemp = 0.;
+
+        Ap(matl,i,j); 
+        ImM(matl); 
+        fpfun(vecl,i,j); 
+        dot(resl, matl, vecl);  
+
+        Am(matr,i,j);
+        IpM(matr);
+        fmfun(vecr,i,j);
+        dot(resr, matr, vecr);
+
+         htemp += dt * (resl[0] + resr[0])/ 2. 
+         - dt*gamma_visc* (h[i+2 + (j+1) *(Nx+1)] + h[i + (j+1) *(Nx+1)] - 2. * h[i + 1 + (j+1) *(Nx+1)]) / dx;
+         hutemp += dt * (resl[1] + resr[1])/ 2.
+         - dt*gamma_visc* (hu[i+2 + (j+1) *(Nx+1)] + hu[i + (j+1) *(Nx+1)] - 2. * hu[i + 1 + (j+1) *(Nx+1)]) / dx;
+         hvtemp += dt * (resl[2] + resr[2])/ 2.
+         - dt*gamma_visc* (hv[i+2 + (j+1) *(Nx+1)] + hv[i + (j+1) *(Nx+1)] - 2. * hv[i + 1 + (j+1) *(Nx+1)]) / dx;
+        
+         hnext[i + 1 + (Nx+1) * (j+1)] =  h[i + 1 + (Nx+1) * (j+1)] - htemp;   
+        hunext[i + 1 + (Nx+1) * (j+1)] = hu[i + 1 + (Nx+1) * (j+1)] - hutemp;
+        hvnext[i + 1 + (Nx+1) * (j+1)] = hv[i + 1 + (Nx+1) * (j+1)] - hvtemp; 
+    }
+    real * temp = hnext;
+    hnext = h;
+    h = temp;
+
+    temp = hunext;
+    hunext = hu;
+    hu = temp;
+
+    temp = hvnext;
+    hvnext = hv;
+    hv = temp;
+    updateBC();
+    for (int j = 0; j < Ny - 1; ++j)
+    for (int i = 0; i < Nx - 1; ++i)
+    {
+        real matl[9];
+        real vecl[3];
+        real matr[9];
+        real vecr[3];
+        real resl[3];
+        real resr[3];
+
+        real x = i*dx;
+        real y = j*dy;
+
+        real htemp = 0., hutemp = 0., hvtemp = 0.;
+
+        Bp(matl,i,j); 
+        ImM(matl); 
+        gpfun(vecl,i,j); 
+        dot(resl, matl, vecl);  
+
+        Bm(matr,i,j);
+        IpM(matr);
+        gmfun(vecr,i,j);
+        dot(resr, matr, vecr);
+
+         htemp += dt * (resl[0] + resr[0])/ 2.
+         - dt*gamma_visc* (h[i+1 + (j+2) *(Nx+1)] + h[i + 1 + (j) *(Nx+1)] - 2. * h[i + 1 + (j+1) *(Nx+1)]) / dx;
+        hutemp += dt * (resl[1] + resr[1])/ 2.
+        - dt*gamma_visc* (hu[i+1 + (j+2) *(Nx+1)] + hu[i + 1 + (j) *(Nx+1)] - 2. * hu[i + 1 + (j+1) *(Nx+1)]) / dx;
+        hvtemp += dt * (resl[2] + resr[2])/ 2.
+        - dt*gamma_visc* (hv[i+1 + (j+2) *(Nx+1)] + hv[i + 1 + (j) *(Nx+1)] - 2. * hv[i + 1 + (j+1) *(Nx+1)]) / dx;
+        
+         hnext[i + 1 + (Nx+1) * (j+1)] =  h[i + 1 + (Nx+1) * (j+1)] - htemp;   
+        hunext[i + 1 + (Nx+1) * (j+1)] = hu[i + 1 + (Nx+1) * (j+1)] - hutemp; 
+        hvnext[i + 1 + (Nx+1) * (j+1)] = hv[i + 1 + (Nx+1) * (j+1)] - hvtemp; 
+    }
+
+    temp = hnext;
+    hnext = h;
+    h = temp;
+
+    temp = hunext;
+    hunext = hu;
+    hu = temp;
+
+    temp = hvnext;
+    hvnext = hv;
+    hv = temp;
+    updateBC();
+}
+
+
+void advInTimeS(int tstep)
+{
+    printsol(2*tstep);
+    for (int j = 0; j < Ny - 1; ++j)
+    for (int i = 0; i < Nx - 1; ++i)
+    {
+        real x = i*dx;
+        real y = j*dy;
+        real vecl[3];
+        real vecr[3];
+
+        fcfun(vecl, i,j);
+        gcfun(vecr, i,j);
+        
+        vecl[0] += vecr[0];
+        vecl[1] += vecr[1];
+        vecl[2] += vecr[2];
+
+         hnext[i + 1 + (Nx+1) * (j+1)] = 0.25*( h[i + (Nx+1) * (j+1)] +  h[i + 2 + (Nx+1) * (j+1)] +  h[i + 1 + (Nx+1) * (j)] +  h[i + 1 + (Nx+1) * (j+2)]) -
+         dt * vecl[0];     
+        hunext[i + 1 + (Nx+1) * (j+1)] = 0.25*(hu[i + (Nx+1) * (j+1)] + hu[i + 2 + (Nx+1) * (j+1)] + hu[i + 1 + (Nx+1) * (j)] + hu[i + 1 + (Nx+1) * (j+2)]) -
+        dt * vecl[1] - cf(y)*dt*hv[i + 1 + (Nx+1) * (j+1)];    
+        hvnext[i + 1 + (Nx+1) * (j+1)] = 0.25*(hv[i + (Nx+1) * (j+1)] + hv[i + 2 + (Nx+1) * (j+1)] + hv[i + 1 + (Nx+1) * (j)] + hv[i + 1 + (Nx+1) * (j+2)]) -
+        dt * vecl[2] + cf(y)*dt*hu[i + 1 + (Nx+1) * (j+1)];    
+    }
+
+    real * temp = hnext;
+    hnext = h;
+    h = temp;
+
+    temp = hunext;
+    hunext = hu;
+    hu = temp;
+
+    temp = hvnext;
+    hvnext = hv;
+    hv = temp;
+
+    updateBC();
+
+    I[0] = integrate(h);
+    I[1] = integrate(hu);
+    I[2] = integrate(hv);
+    I[3] = integrateenegy();
+    I[4] = integratevort();
+    fprintf(fout3, "%14.16f ", T);
+    for (int i = 0; i < 5; ++i)
+    {
+        fprintf(fout3, "%14.16f ",dx*dy* (I[i]- Ip[i]));
+    }
+    fprintf(fout3, "\n");
+    for (int i = 0; i < 5; ++i)
+    {
+        Ip[i] = I[i];
+    }
+    T += dt;
+    printsol(2*tstep + 1);
+    for (int j = 0; j < Ny - 1; ++j)
+    for (int i = 0; i < Nx - 1; ++i)
+    {
+                real x = i*dx;
+        real y = j*dy;
+        real vecl[3];
+        real vecr[3];
+
+        fcfun(vecl, i,j);
+        gcfun(vecr, i,j);
+        
+        vecl[0] += vecr[0];
+        vecl[1] += vecr[1];
+        vecl[2] += vecr[2];
+
+         hnext[i + 1 + (Nx+1) * (j+1)] =  h[i + 1 + (Nx+1) * (j+1)] - 2.*dt * vecl[0];     
+        hunext[i + 1 + (Nx+1) * (j+1)] = hu[i + 1 + (Nx+1) * (j+1)] - 2.*dt * vecl[1] - cf(y)*dt*hv[i + 1 + (Nx+1) * (j+1)];     
+        hvnext[i + 1 + (Nx+1) * (j+1)] = hv[i + 1 + (Nx+1) * (j+1)] - 2.*dt * vecl[2] + cf(y)*dt*hu[i + 1 + (Nx+1) * (j+1)];
+    }
+    temp = hnext;
+    hnext = h;
+    h = temp;
+
+    temp = hunext;
+    hunext = hu;
+    hu = temp;
+
+    temp = hvnext;
+    hvnext = hv;
+    hv = temp;
+
+    updateBC();
+
+    I[0] = integrate(h);
+    I[1] = integrate(hu);
+    I[2] = integrate(hv);
+    I[3] = integrateenegy();
+    I[4] = integratevort();
+    fprintf(fout3, "%14.16f ", T);
+    for (int i = 0; i < 5; ++i)
+    {
+        fprintf(fout3, "%14.16f ",dx*dy* (I[i]- Ip[i]));
+    }
+    fprintf(fout3, "\n");
+    for (int i = 0; i < 5; ++i)
+    {
+        Ip[i] = I[i];
+    }
+    T+=dt;
+}
+
+
+void adaptTimeStep()
+{
+    real cfl = 0.;
+    real qtt;
+    for(int j = 0; j < Ny-1; ++j)
+    for(int i = 0; i < Nx-1; ++i)
+    {
+
+        qtt = abs(hu[i+1 + (j+1)* (Nx+1)] / h[i+1 + (j+1)* (Nx+1)]) +
+              abs(hv[i+1 + (j+1)* (Nx+1)] / h[i+1 + (j+1)* (Nx+1)]) + 
+              sqrt(g * h[i+1 + (j+1)* (Nx+1)]);
+
+        if (cfl < qtt) cfl = qtt;
+    }
+
+    dt = dx > dy ? dx / cfl : dy / cfl;
+    dt /= 2.;
+}
+
+void updateBC()
+{
+    // for (int i = 0; i < Nx + 1; ++i)
+    // {
+    //      h[i]  = h[i + (Ny - 1)* (Nx+1)];
+    //     hu[i] = hu[i + (Ny - 1)* (Nx+1)];  
+    //     hv[i] = hv[i + (Ny - 1)* (Nx+1)];
+
+    //     h [i + (Ny)* (Nx+1)] =  h[i + (Nx+1)];
+    //     hu[i + (Ny)* (Nx+1)] = hu[i + (Nx+1)];  
+    //     hv[i + (Ny)* (Nx+1)] = hv[i + (Nx+1)];
+    // }
+    // for (int j = 0; j < Ny + 1; ++j)
+    // {
+    //     h [j*(Nx+1)] = h [Nx-1 + j* (Nx+1)];
+    //     hu[j*(Nx+1)] = hu[Nx-1 + j* (Nx+1)];  
+    //     hv[j*(Nx+1)] = hv[Nx-1 + j* (Nx+1)];
+
+    //     h [Nx + j* (Nx+1)] =  h[1 + j*(Nx+1)] ;
+    //     hu[Nx + j* (Nx+1)] = hu[1 + j*(Nx+1)];  
+    //     hv[Nx + j* (Nx+1)] = hv[1 + j*(Nx+1)];
+    // }
+
+    for (int i = 0; i < Nx + 1; ++i)
+    {
+         h[i]  = h[i + (1)* (Nx+1)];
+        hu[i] =  hu[i + (1)* (Nx+1)];  
+        hv[i] = -hv[i + (1)* (Nx+1)];
+
+         h[i + (Ny)* (Nx+1)] =  h[i + (Ny-1)*(Nx+1)];
+        hu[i + (Ny)* (Nx+1)] =  hu[i + (Ny-1)*(Nx+1)];  
+        hv[i + (Ny)* (Nx+1)] = -hv[i + (Ny-1)*(Nx+1)];
+    }
+    for (int j = 0; j < Ny + 1; ++j)
+    {
+        h [j*(Nx+1)] =  h[1 + j*(Nx+1)];
+        hu[j*(Nx+1)] = -hu[1 + j*(Nx+1)];  
+        hv[j*(Nx+1)] = hv[1 + j*(Nx+1)];
+
+        h [Nx + j* (Nx+1)] = h [Nx-1 + j* (Nx+1)] ;
+        hu[Nx + j* (Nx+1)] = -hu[Nx-1 + j* (Nx+1)];  
+        hv[Nx + j* (Nx+1)] = hv[Nx-1 + j* (Nx+1)];
+    }
+}
+
+void setUpIC()
+{
+    for(int j = 0; j < Ny-1; ++j)
+    for(int i = 0; i < Nx-1; ++i)
+    {
+        real x = i*dx;
+        real y = j*dy;
+
+        h [i+1 + (j+1)* (Nx+1)] = ic_h(x,y);
+        hu[i+1 + (j+1)* (Nx+1)] = ic_hu(x,y);
+        hv[i+1 + (j+1)* (Nx+1)] = ic_hv(x,y);
+    }
+    updateBC();
+}
+
+void printsol(int tstep)
+{
+    FILE* fout_sol;
+    char ss[100];
+    sprintf(ss, "out/h_%4.4d.txt", tstep);
+    fout_sol = fopen(ss, "w");
+    for (int j = 1; j < Ny+1; ++j)
+    {
+        for (int i = 1; i < Nx+1; ++i)
+        {
+            fprintf(fout_sol,"%14.16f ", h[i + j*(Nx+1)]);
+        }
+        fprintf(fout_sol,"\n");
+    }
+    fclose(fout_sol);
+}
+
+
+int main()
+{
+    h = (real*) malloc(sizeof(real) * (Nx + 1) * (Ny + 1));
+    hu = (real*) malloc(sizeof(real) * (Nx + 1) * (Ny + 1));
+    hv = (real*) malloc(sizeof(real) * (Nx + 1) * (Ny + 1));
+    hnext = (real*) malloc(sizeof(real) * (Nx + 1) * (Ny + 1));
+    ht = (real*) malloc(sizeof(real) * (Nx + 1) * (Ny + 1));
+    hunext = (real*) malloc(sizeof(real) * (Nx + 1) * (Ny + 1));
+    hut = (real*) malloc(sizeof(real) * (Nx + 1) * (Ny + 1));
+    hvnext = (real*) malloc(sizeof(real) * (Nx + 1) * (Ny + 1));
+    hvt = (real*) malloc(sizeof(real) * (Nx + 1) * (Ny + 1));
+    dx = X / (Nx-1);
+    dy = Y / (Ny-1);
+    
+    setUpIC();
+    updateBC();
+    adaptTimeStep();
+    fout3 = fopen("cons.txt","w");
+    I[0] = integrate(h);
+    I[1] = integrate(hu);
+    I[2] = integrate(hv);
+    I[3] = integrateenegy();
+    I[4] = integratevort();
+    for (int i = 0; i < 5; ++i)
+    {
+        Ip[i] = I[i];
+    }
+    for (int tstep = 0; tstep < Nt; ++tstep)
+    {
+        advInTimeS(tstep);
+    #ifdef R_ADP
+        adaptTimeStep();
+    #endif
+    }
+    fclose(fout3);
+
+    free(h);
+    free(hu);
+    free(hv);
+    free(ht);
+    free(hut);
+    free(hvt);
+    free(hnext);
+    free(hunext);
+    free(hvnext);
+    
+    FILE* fout1 = fopen("out/x.txt","w");
+    FILE* fout2 = fopen("out/y.txt","w");
+    
+    for (int j = 0; j < Ny; ++j)
+    {
+        for (int i = 0; i < Nx; ++i)
+        {
+            fprintf(fout1, "%f ", dx*i);
+            fprintf(fout2, "%f ", dy*j);
+        }
+
+        fprintf(fout1, "\n");
+        fprintf(fout2, "\n");
+    }
+
+    fclose(fout1);
+    fclose(fout2);
+    return 0;
+}

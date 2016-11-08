@@ -28,25 +28,25 @@ we chose smooth function (gaussian).
     \begin{subfigure}[t]{0.48\textwidth}
         \centering
         \includegraphics[width=\textwidth]{images/sol_ds_0000.eps}
-        \caption{$t_{n}=0$}
+        \caption{$n=0$}
         \label{fig:0}
     \end{subfigure}
     \begin{subfigure}[t]{0.48\textwidth}
         \centering
         \includegraphics[width=\textwidth]{images/sol_ds_0010.eps}
-        \caption{$t_{n}=10$}
+        \caption{$n=10$}
         \label{fig:10}
     \end{subfigure}
     \begin{subfigure}[t]{0.48\textwidth}
         \centering
         \includegraphics[width=\textwidth]{images/sol_ds_0050.eps}
-        \caption{$t_{n}=50$}
+        \caption{$n=50$}
         \label{fig:50}
     \end{subfigure}
     \begin{subfigure}[t]{0.48\textwidth}
         \centering
         \includegraphics[width=\textwidth]{images/sol_ds_0100.eps}
-        \caption{$t_{n}=100$}
+        \caption{$n=100$}
         \label{fig:100}
     \end{subfigure}
     \caption{Periodic boundary condtions for dimensional splitting.}
@@ -58,25 +58,25 @@ we chose smooth function (gaussian).
     \begin{subfigure}[t]{0.4\textwidth}
         \centering
         \includegraphics[width=\textwidth]{images/sol_ds_0000_per.eps}
-        \caption{$t_{n}=0$}
+        \caption{$n=0$}
         \label{fig:0}
     \end{subfigure}
     \begin{subfigure}[t]{0.48\textwidth}
         \centering
         \includegraphics[width=\textwidth]{images/sol_ds_0010_per.eps}
-        \caption{$t_{n}=10$}
+        \caption{$n=10$}
         \label{fig:10}
     \end{subfigure}
     \begin{subfigure}[t]{0.48\textwidth}
         \centering
         \includegraphics[width=\textwidth]{images/sol_ds_005_per.eps}
-        \caption{$t_{n}=50$}
+        \caption{$n=50$}
         \label{fig:50}
     \end{subfigure}
     \begin{subfigure}[t]{0.48\textwidth}
         \centering
         \includegraphics[width=\textwidth]{images/sol_ds_0100_per.eps}
-        \caption{$t_{n}=100$}
+        \caption{$n=100$}
         \label{fig:100}
     \end{subfigure}
     \caption{Free boundary condtions for dimensional splitting.}
@@ -136,50 +136,50 @@ u_0(x,y)=
 \end{equation}
 
 interestingly forming a cylindrical column. Note that Dimenional splitting could not treat discontinous initial conditions while Richtmeyer scheme remained stable
-without any artificial viscosity. 
-
+without any artificial viscosity. The Corilis force was added to  simulation with interesting boundary conditions (free for $h$, free for $hu$ in horizontal direction and reflective in vertical,
+free for $hv$ in vertical direction and reflective in horizontal direction. 
 \begin{figure}[h!]
     \centering
     \begin{subfigure}[t]{0.4\textwidth}
         \centering
         \includegraphics[width=\textwidth]{images/sol_ri_0000_per.eps}
-        \caption{$t_{n}=0$}
+        \caption{$n=0$}
         \label{fig:0}
     \end{subfigure}
     \begin{subfigure}[t]{0.48\textwidth}
         \centering
         \includegraphics[width=\textwidth]{images/sol_ri_0025_per.eps}
-        \caption{$t_{n}=25$}
+        \caption{$n=25$}
         \label{fig:10}
     \end{subfigure}
     \begin{subfigure}[t]{0.48\textwidth}
         \centering
         \includegraphics[width=\textwidth]{images/sol_ri_0100_per.eps}
-        \caption{$t_{n}=100$}
+        \caption{$n=100$}
         \label{fig:50}
     \end{subfigure}
     \begin{subfigure}[t]{0.48\textwidth}
         \centering
         \includegraphics[width=\textwidth]{images/sol_ri_0150_per.eps}
-        \caption{$t_{n}=150$}
+        \caption{$n=150$}
         \label{fig:100}
     \end{subfigure}
     \begin{subfigure}[t]{0.48\textwidth}
         \centering
         \includegraphics[width=\textwidth]{images/sol_ri_0400_per.eps}
-        \caption{$t_{n}=400$}
+        \caption{$n=400$}
         \label{fig:100}
     \end{subfigure}
     \begin{subfigure}[t]{0.48\textwidth}
         \centering
         \includegraphics[width=\textwidth]{images/sol_ri_0600_per.eps}
-        \caption{$t_{n}=600$}
+        \caption{$n=600$}
         \label{fig:100}
     \end{subfigure}
     \begin{subfigure}[t]{0.48\textwidth}
         \centering
         \includegraphics[width=\textwidth]{images/sol_ri_1000_per.eps}
-        \caption{$t_{n}=1000$}
+        \caption{$n=1000$}
         \label{fig:100}
     \end{subfigure}
     \caption{Periodic boundary condtions for Richtmeyer scheme.}
@@ -190,48 +190,103 @@ without any artificial viscosity.
     \begin{subfigure}[t]{0.4\textwidth}
         \centering
         \includegraphics[width=\textwidth]{images/sol_ri_0000.eps}
-        \caption{$t_{n}=0$}
+        \caption{$n=0$}
         \label{fig:0}
     \end{subfigure}
     \begin{subfigure}[t]{0.48\textwidth}
         \centering
         \includegraphics[width=\textwidth]{images/sol_ri_0025.eps}
-        \caption{$t_{n}=25$}
+        \caption{$n=25$}
         \label{fig:10}
     \end{subfigure}
     \begin{subfigure}[t]{0.48\textwidth}
         \centering
         \includegraphics[width=\textwidth]{images/sol_ri_0100.eps}
-        \caption{$t_{n}=100$}
+        \caption{$n=100$}
         \label{fig:50}
     \end{subfigure}
     \begin{subfigure}[t]{0.48\textwidth}
         \centering
         \includegraphics[width=\textwidth]{images/sol_ri_0150.eps}
-        \caption{$t_{n}=150$}
+        \caption{$n=150$}
         \label{fig:100}
     \end{subfigure}
     \begin{subfigure}[t]{0.48\textwidth}
         \centering
         \includegraphics[width=\textwidth]{images/sol_ri_0400.eps}
-        \caption{$t_{n}=400$}
+        \caption{$n=400$}
         \label{fig:100}
     \end{subfigure}
     \begin{subfigure}[t]{0.48\textwidth}
         \centering
         \includegraphics[width=\textwidth]{images/sol_ri_0600.eps}
-        \caption{$t_{n}=600$}
+        \caption{$n=600$}
         \label{fig:100}
     \end{subfigure}
     \begin{subfigure}[t]{0.48\textwidth}
         \centering
         \includegraphics[width=\textwidth]{images/sol_ri_1000.eps}
-        \caption{$t_{n}=1000$}
+        \caption{$n=1000$}
         \label{fig:100}
     \end{subfigure}
     \caption{Free boundary condtions for Richtmeyer scheme.}
     \label{fig:2DSolutions_ri}
 \end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \begin{subfigure}[t]{0.4\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{images/sol_ri_0000cf.eps}
+        \caption{$n=0$}
+        \label{fig:0}
+    \end{subfigure}
+    \begin{subfigure}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{images/sol_ri_0200cf.eps}
+        \caption{$n=200$}
+        \label{fig:10}
+    \end{subfigure}
+    \begin{subfigure}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{images/sol_ri_0400cf.eps}
+        \caption{$n=400$}
+        \label{fig:50}
+    \end{subfigure}
+    \begin{subfigure}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{images/sol_ri_0600cf.eps}
+        \caption{$n=600$}
+        \label{fig:100}
+    \end{subfigure}
+    \begin{subfigure}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{images/sol_ri_0800cf.eps}
+        \caption{$n=800$}
+        \label{fig:100}
+    \end{subfigure}
+    \begin{subfigure}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{images/sol_ri_1000cf.eps}
+        \caption{$n=1000$}
+        \label{fig:100}
+    \end{subfigure}
+    \begin{subfigure}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{images/sol_ri_1200cf.eps}
+        \caption{$n=1200$}
+        \label{fig:999}
+    \end{subfigure}
+     \begin{subfigure}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{images/sol_ri_1400cf.eps}
+        \caption{$n=1400$}
+        \label{fig:999}
+    \end{subfigure}
+    \caption{Free boundary condtions for Richtmeyer scheme with Corilis force term.}
+    \label{fig:2DSolutions_ri_cf}
+\end{figure}
+
 
 
 
