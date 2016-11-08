@@ -1,0 +1,7 @@
+\section{CFL condition}
+The CFL condition for this problem is 
+\[(|u|+|v|+\sqrt{gh})\frac{\Delta t}{\Delta x} \le 1\]
+
+The 1D scheme with adaptive timestepping evalutated faster than non-adaptive scheme. For 2D, the dimensional splitting does not meet the CFL condition due to instabillity.
+The CFL condition for the Richtmeyer fixed timestep was set initially to be $\sqrt{gh}\frac{\Delta t}{\Delta x} = 1$ which created the instability after the shock 
+formation. The adaptive timesteping (updating $\Delta t = \frac{\Delta x}{max(|u|+|v|+\sqrt{gh})}$  before each timestep) made the solution stable throughout the simultaion.  
