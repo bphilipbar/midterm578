@@ -5,9 +5,10 @@ energy 0.5($hv^2$+$gh^2$). Potential vorticity is only looked at in the 2D solve
 
 \subsection{1D Conservation Laws}
 Investigation of conservation laws in the 1D solver shows differences
-between the conserved quantities Figure~\ref{fig:1D_cons}. The mass is hypothetically guessed to be strictly conserved by the scheme along wiht 
-momentum unless there are reflections when the walls take some of the momentum. What we observe is mass, momentum, and energy are not conserved 
-adequetly because of the inherent nature of the numerical schemes inability to capture solutions at the non-linear shocks.  
+between the conserved quantities Figure~\ref{fig:1D_cons}. The mass is hypothetically guessed to be strictly conserved by the scheme, along with 
+momentum, unless there are reflections from the boundary conditions where the walls take some of the momentum. As we see from the energy conservation 
+graph ''jumps'' at the time of shock formation Figure~\ref{fig:1D_cons}. We find energy is not conserved 
+adequetly due to the inherent nature of the numerical schemes inability to capture solutions at the non-linear shocks \cite{Lax}. 
 \newline
 
 \begin{figure}[h!]
@@ -38,11 +39,11 @@ adequetly because of the inherent nature of the numerical schemes inability to c
 
 \subsection{2D Conservation Laws}
 
-The conservation laws are analyzed using the two-step Richtmeyer 2D solver and show similar discrepencies
-failing to show the quantities mass, momentum and energy are adequetly conserved Figure~\ref{fig:2Dcons_A}. 
-In the 2D scheme the conserved quantities are again hypothetically guessed to be strictly conserved. The energy 
-conservation is shown to suffer from the same flaws in the numerical scheme as before, and does not initially conserve
-energy similar to 1D. Therefore mass, momentum and energy are not adequetly conserved as before, which leads to the same
+In the 2D scheme the conserved quantities are again hypothetically guessed to be strictly conserved. The conservation laws
+are analyzed using the two-step Richtmeyer 2D solver and show similar discrepencies
+failing to show the energy is adequetly conserved Figure~\ref{fig:2Dcons_A}. 
+The energy conservation is shown to suffer from the same flaws in the numerical scheme as before, and does not initially conserve
+energy with the error of second order, similar to 1D. This leads to the same
 presumption given for the 1D case. 
 \newline
 
@@ -102,5 +103,5 @@ of Richtmeyer Figure~\ref{fig:2Dcons_B}.
 \end{figure}
 
 We draw the conlusion that the physical quantities mass, momentum and energy are not adequetly conserved due to the inability of
-the applied numerical schemes due to the inability to capture the spurious oscilations produced by shocks for both the 1D and 2D methods.
-Finally we have shown
+the applied numerical schemes to capture solutions in the regions of non-linear shocks produced by
+spurious oscilations \cite{Lax} in both the 1D and 2D methods.
