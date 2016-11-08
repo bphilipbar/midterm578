@@ -1,7 +1,7 @@
 
 \section{2D Solver}
 The spatial domain for the 2D solver is $\Omega=[0\;\;1]\times[0\;\;1]$. To go about solving the system in 2D there are many options,
-we compare two schemes. Lax-Wendfoff, and a two step version by Richtmeyer. \newline
+we compare two schemes: Lax-Wendfoff with dimenison splitting and a two step version by Richtmeyer. \newline
 
 \subsection{Dimensional Splitting (Lax-Wendroff)}
 
@@ -17,6 +17,11 @@ U_{ij}^{n+1} = U_{ij}^* -
 \frac{\Delta t}{2} \bigg((I - \frac{\Delta t}{\Delta y} B_{ij+\frac{1}{2}}^*) D_+^yG_{ij}^*
  +(I + \frac{\Delta t}{\Delta x} B_{ij-\frac{1}{2}}^*) D_{\_}^y G_{ij}^* \bigg)
 \end{equation}
+
+As we see mixed derivatives will be treated non simmetricly by this formulas. We observe same oscilations as in 1D as in numerical solution.
+Dimensional splitting turnes to be dramaticly unstable and to produce the numerical solution as on Figure~\ref{fig:2DSolutions_ds} timestep was decrised
+2 times bellow the CFL condition and small ammout of artificial viscosity $0.03 \Delta x U_{xx}$ was added to a scheme. By the same argument as the initial condition
+we chose smooth function (gaussian). 
 
 \begin{figure}[h!]
     \centering
@@ -110,7 +115,7 @@ U_{ij}^{n+2} = U_{i,j}^{n+1} -
 \end{dmath} 
 
 This 2D-scheme requires about a fourth of the computational time as the original Lax-Wendroff method, and produces less shock
-overshoot than the orignal\cite{Roach}. It is worth noting that the Ricthmeyer scheme does not require evalutaion
+overshoot than the orignal\cite{Roach}. It is worth to note that the Ricthmeyer scheme does not require evalutaion
 of the Jacobians. 
 \newline
 
@@ -130,7 +135,9 @@ u_0(x,y)=
 \end{array}
 \end{equation}
 
-interestingly forming a cylindrical column.
+interestingly forming a cylindrical column. Note that Dimenional splitting could not treat discontinous initial conditions while Richtmeyer scheme remained stable
+without any artificial viscosity. 
+
 \begin{figure}[h!]
     \centering
     \begin{subfigure}[t]{0.4\textwidth}
@@ -175,7 +182,7 @@ interestingly forming a cylindrical column.
         \caption{$t_{n}=1000$}
         \label{fig:100}
     \end{subfigure}
-    \caption{Periodic boundary condtions for dimensional splitting.}
+    \caption{Periodic boundary condtions for Richtmeyer scheme.}
     \label{fig:2DSolutions_ri}
 \end{figure}
 \begin{figure}[h!]
@@ -222,7 +229,7 @@ interestingly forming a cylindrical column.
         \caption{$t_{n}=1000$}
         \label{fig:100}
     \end{subfigure}
-    \caption{Free boundary condtions for dimensional splitting.}
+    \caption{Free boundary condtions for Richtmeyer scheme.}
     \label{fig:2DSolutions_ri}
 \end{figure}
 
