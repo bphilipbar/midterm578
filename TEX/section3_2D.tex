@@ -1,8 +1,7 @@
 
 \section{2D Solver}
-The spatial domain for the 2D solver is $\Omega=[0,1]\times[0,1]$ To go about solving the system in 2D there are many options,
-we compare two schemes. Lax-Wendfoff, and a two step version of Richtmeyer proposed. \newline
-\newline
+The spatial domain for the 2D solver is $\Omega=[0\;\;1]$. To go about solving the system in 2D there are many options,
+we compare two schemes. Lax-Wendfoff, and a two step version of Richtmeyer. \newline
 
 \subsection{Dimensional Splitting (Lax Wendroff)}
 
@@ -18,8 +17,6 @@ U_{ij}^{n+1} = U_{ij}^* -
 \frac{\Delta t}{2} \bigg((I - \frac{\Delta t}{\Delta y} B_{ij+\frac{1}{2}}^*) D_+^yG_{ij}^*
  +(I + \frac{\Delta t}{\Delta x} B_{ij-\frac{1}{2}}^*) D_{\_}^y G_{ij}^* \bigg)
 \end{equation}
-\newline
-
 
 \subsection{Two-Step Lax-Wendroff Method (Richtmeyer)}
 
