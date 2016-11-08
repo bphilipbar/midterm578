@@ -5,10 +5,9 @@ energy 0.5($hv^2$+$gh^2$). Potential vorticity is only looked at in the 2D solve
 
 \subsection{1D Conservation Laws}
 Investigation of conservation laws in the 1D solver shows differences
-between the conserved quantities Figure~\ref{fig:1D_cons}. The mass is hypothetically guessed to be strictly conserved by the scheme, 
-the momentum should also be strictly conserved by the scheme, unless there are reflections when the walls take
-some of the momentum. We observe mass, momentum, and energy to not be conserved adequetly because the inherent nature of 
-the numerical schemes ability to capture solutions during shocks.  
+between the conserved quantities Figure~\ref{fig:1D_cons}. The mass is hypothetically guessed to be strictly conserved by the scheme along wiht 
+momentum unless there are reflections when the walls take some of the momentum. What we observe is mass, momentum, and energy are not conserved 
+adequetly because of the inherent nature of the numerical schemes inability to capture solutions at the non-linear shocks.  
 \newline
 
 \begin{figure}[h!]
@@ -39,11 +38,12 @@ the numerical schemes ability to capture solutions during shocks.
 
 \subsection{2D Conservation Laws}
 
-The conservation laws in the 2D solver shows similar differences
-between the conserved quantities Figure~\ref{fig:2Dcons_A}. In the 2D scheme mass, momentum and energy are hypothetically 
-guessed to be strictly conserved onced again. The energy suffers from the same inherent flaws
-of the numerical scheme as before, and does not initially conserve energy similar to 1D. Therefore mass,
-momentum and energy are not adequetly conserved as before, which leads to the same presumption given for the 1D case. 
+The conservation laws are analyzed using the two-step Richtmeyer 2D solver and show similar discrepencies
+failing to show the quantities mass, momentum and energy are adequetly conserved Figure~\ref{fig:2Dcons_A}. 
+In the 2D scheme the conserved quantities are again hypothetically guessed to be strictly conserved. The energy 
+conservation is shown to suffer from the same flaws in the numerical scheme as before, and does not initially conserve
+energy similar to 1D. Therefore mass, momentum and energy are not adequetly conserved as before, which leads to the same
+presumption given for the 1D case. 
 \newline
 
 \begin{figure}[h!]
@@ -67,11 +67,11 @@ momentum and energy are not adequetly conserved as before, which leads to the sa
 \end{figure}
 
 
-The potential vorticity given by this formula,
+The potential vorticity is given by this formula,
 \begin{equation}\label{eqn:13}
 \frac{\partial hv}{\partial x} - \frac{\partial hu}{\partial y} 
 \end{equation}
-should be conserved. We show it to be conservatived using the 2D two-step method
+and should be conserved. We show it to be conservatived using the 2D two-step method
 of Richtmeyer Figure~\ref{fig:2Dcons_B}.
 \newline
 

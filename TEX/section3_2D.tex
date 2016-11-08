@@ -1,9 +1,9 @@
 
 \section{2D Solver}
 The spatial domain for the 2D solver is $\Omega=[0\;\;1]$. To go about solving the system in 2D there are many options,
-we compare two schemes. Lax-Wendfoff, and a two step version of Richtmeyer. \newline
+we compare two schemes. Lax-Wendfoff, and a two step version by Richtmeyer. \newline
 
-\subsection{Dimensional Splitting (Lax Wendroff)}
+\subsection{Dimensional Splitting (Lax-Wendroff)}
 
 Using the 1D equations of the Lax-Wendroff scheme for system (4) a dimenional split can be implemented by 
 doing a step in $x$, followed by a step in $y$: 
@@ -18,10 +18,70 @@ U_{ij}^{n+1} = U_{ij}^* -
  +(I + \frac{\Delta t}{\Delta x} B_{ij-\frac{1}{2}}^*) D_{\_}^y G_{ij}^* \bigg)
 \end{equation}
 
+\begin{figure}[h!]
+    \centering
+    \begin{subfigure}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{images/sol_ds_0000.eps}
+        \caption{$t_{n}=0$}
+        \label{fig:0}
+    \end{subfigure}
+    \begin{subfigure}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{images/sol_ds_0010.eps}
+        \caption{$t_{n}=10$}
+        \label{fig:10}
+    \end{subfigure}
+    \begin{subfigure}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{images/sol_ds_0050.eps}
+        \caption{$t_{n}=50$}
+        \label{fig:50}
+    \end{subfigure}
+    \begin{subfigure}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{images/sol_ds_0100.eps}
+        \caption{$t_{n}=100$}
+        \label{fig:100}
+    \end{subfigure}
+    \caption{Periodic boundary condtions for dimensional splitting.}
+    \label{fig:2DSolutions_ds}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \begin{subfigure}[t]{0.4\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{images/sol_ds_0000_per.eps}
+        \caption{$t_{n}=0$}
+        \label{fig:0}
+    \end{subfigure}
+    \begin{subfigure}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{images/sol_ds_0010_per.eps}
+        \caption{$t_{n}=10$}
+        \label{fig:10}
+    \end{subfigure}
+    \begin{subfigure}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{images/sol_ds_005_per.eps}
+        \caption{$t_{n}=50$}
+        \label{fig:50}
+    \end{subfigure}
+    \begin{subfigure}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{images/sol_ds_0100_per.eps}
+        \caption{$t_{n}=100$}
+        \label{fig:100}
+    \end{subfigure}
+    \caption{Free boundary condtions for dimensional splitting.}
+    \label{fig:2DSolutions_ds}
+\end{figure}
+
 \subsection{Two-Step Lax-Wendroff Method (Richtmeyer)}
 
 Richtmeyer proposed a two-step version of the Lax-Wendroff method \cite{Roach}, which is much simpler than the original, especially in multi-dimensional problems.
-The first step uses Lax's  method and the second step is a midpoint leapfrog calculation. 
+The first step uses Lax's method and the second step is a midpoint leapfrog calculation. 
 
 \begin{equation}\label{eqn:8}
 U_{i}^{n+1} = \frac{1}{2}(U_{i+1}^{n}+U_{i-1}^{n})-\Delta{t} \Big(\frac{F_{i+1}^{n}-F_{i-1}^{n}}{2\Delta x}\Big)
@@ -31,7 +91,7 @@ U_{i}^{n+2} = U_{i}^{n+1} + (2\Delta t) \Big ( \frac{ F_{i+1}^{n+1}-F_{i-1}^{n+1
 \end{equation} 
 \newline
 
-The values $F_{i \pm 1}^{n+1}$ in the second step are based on the $U_{i \pm 1}^{n+1}$ results on the first step. The first step is considered
+The values $F_{i \pm 1}^{n+1}$ in the second step are based on the $U_{i \pm 1}^{n+1}$ results of the first step. The first step is considered
 a provisonal step, with signifigance attached only to the results of the second step in each sequence. This method does not look anything like the original
 Lax-Wendroff method of \eqref{eqn:4}, but substitution of \eqref{eqn:10} and \eqref{eqn:11} shows that the methods are equivalent. 
 \newline
@@ -49,13 +109,13 @@ U_{ij}^{n+2} = U_{i,j}^{n+1} -
   (2\Delta t) \Big( \frac{ F_{i+1,j}^{n+1} - F_{i-1,j}^{n+1} }{2 \Delta x}  + \frac{ G_{ij+1}^{n+1} - G_{ij-1}^{n+1} }{ 2 \Delta y }  \Big)
 \end{dmath} 
 
-This 2D-scheme requires about a fourth of the computational time as the original Lax-Wendroff method \cite{Roach}, and produces less shock
- overshoot than the orignal. It is worth noting that Richmeyer scheme does not require evalutaion
- of the jacobians. 
+This 2D-scheme requires about a fourth of the computational time as the original Lax-Wendroff method, and produces less shock
+overshoot than the orignal\cite{Roach}. It is worth noting that the Ricthmeyer scheme does not require evalutaion
+of the Jacobians. 
 \newline
 
 The boundary conditions are prescribed for two cases. The first, periodic for both $h$, $hu$, and $hv$, and the second,
- and more complicated conditions, free for $h$, reflective in the horizontal direction and free in the vertical direction 
+and more complicated conditions, free for $h$, reflective in the horizontal direction and free in the vertical direction 
 for $uh$, and reflective in the vertical direction and free in the horizontal direction for $vh$. 
 The initial conditions are then chosen to be piecewise, 
 
@@ -71,3 +131,101 @@ u_0(x,y)=
 \end{equation}
 
 interestingly forming a cylindrical column.
+\begin{figure}[h!]
+    \centering
+    \begin{subfigure}[t]{0.4\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{images/sol_ri_0000_per.eps}
+        \caption{$t_{n}=0$}
+        \label{fig:0}
+    \end{subfigure}
+    \begin{subfigure}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{images/sol_ri_0025_per.eps}
+        \caption{$t_{n}=25$}
+        \label{fig:10}
+    \end{subfigure}
+    \begin{subfigure}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{images/sol_ri_0100_per.eps}
+        \caption{$t_{n}=100$}
+        \label{fig:50}
+    \end{subfigure}
+    \begin{subfigure}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{images/sol_ri_0150_per.eps}
+        \caption{$t_{n}=150$}
+        \label{fig:100}
+    \end{subfigure}
+    \begin{subfigure}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{images/sol_ri_0400_per.eps}
+        \caption{$t_{n}=400$}
+        \label{fig:100}
+    \end{subfigure}
+    \begin{subfigure}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{images/sol_ri_0600_per.eps}
+        \caption{$t_{n}=600$}
+        \label{fig:100}
+    \end{subfigure}
+    \begin{subfigure}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{images/sol_ri_1000_per.eps}
+        \caption{$t_{n}=1000$}
+        \label{fig:100}
+    \end{subfigure}
+    \caption{Periodic boundary condtions for dimensional splitting.}
+    \label{fig:2DSolutions_ri}
+\end{figure}
+\begin{figure}[h!]
+    \centering
+    \begin{subfigure}[t]{0.4\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{images/sol_ri_0000.eps}
+        \caption{$t_{n}=0$}
+        \label{fig:0}
+    \end{subfigure}
+    \begin{subfigure}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{images/sol_ri_0025.eps}
+        \caption{$t_{n}=25$}
+        \label{fig:10}
+    \end{subfigure}
+    \begin{subfigure}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{images/sol_ri_0100.eps}
+        \caption{$t_{n}=100$}
+        \label{fig:50}
+    \end{subfigure}
+    \begin{subfigure}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{images/sol_ri_0150.eps}
+        \caption{$t_{n}=150$}
+        \label{fig:100}
+    \end{subfigure}
+    \begin{subfigure}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{images/sol_ri_0400.eps}
+        \caption{$t_{n}=400$}
+        \label{fig:100}
+    \end{subfigure}
+    \begin{subfigure}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{images/sol_ri_0600.eps}
+        \caption{$t_{n}=600$}
+        \label{fig:100}
+    \end{subfigure}
+    \begin{subfigure}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{images/sol_ri_1000.eps}
+        \caption{$t_{n}=1000$}
+        \label{fig:100}
+    \end{subfigure}
+    \caption{Free boundary condtions for dimensional splitting.}
+    \label{fig:2DSolutions_ri}
+\end{figure}
+
+
+
+
