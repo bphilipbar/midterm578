@@ -72,7 +72,7 @@ The potential vorticity is given by this formula,
 \begin{equation}\label{eqn:13}
 \frac{\partial hv}{\partial x} - \frac{\partial hu}{\partial y} 
 \end{equation}
-and should be conserved. We show it to be conservatived using the 2D two-step method
+and should be conserved. We show potential vorticity to be conserved by using the 2D two-step method
 of Richtmeyer Figure~\ref{fig:2Dcons_B}.
 \newline
 
@@ -102,6 +102,6 @@ of Richtmeyer Figure~\ref{fig:2Dcons_B}.
     \label{fig:2Dcons_B}
 \end{figure}
 
-We draw the conlusion that the physical quantities mass, momentum and energy are not adequetly conserved due to the inability of
-the applied numerical schemes to capture solutions in the regions of non-linear shocks produced by
-spurious oscilations \cite{Lax} in both the 1D and 2D methods.
+We draw the conclusion that the physical quantities mass, momentum, and vorticity (2D only) are adequetly conserved due to the telescoping nature of the schemes.
+But the energy is not adequetly conserved due to the inability of the applied numerical methods to capture solutions in the regions of non-linear shocks \cite{Lax}, and also the 
+inherint non-linearity of this quantity. 
