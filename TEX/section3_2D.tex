@@ -18,10 +18,11 @@ U_{ij}^{n+1} = U_{ij}^* -
  +(I + \frac{\Delta t}{\Delta x} B_{ij-\frac{1}{2}}^*) D_{\_}^y G_{ij}^* \bigg)
 \end{equation}
 
-As we see mixed derivatives will be treated non simmetricly by this formulas. On the Figure~\ref{fig:2DSolutions_ds} we observe same oscilations as in 1D in the numerical solution.
-Dimensional splitting turnes to be dramaticly unstable and to produce the numerical solution as on Figure~\ref{fig:2DSolutions_ds} timestep was decrised
-2 times bellow the CFL condition and small ammout of artificial viscosity $0.03 \Delta x U_{xx}$ was added to a scheme. By the same argument as the initial condition
-we chose smooth function (gaussian). 
+As we see mixed derivative termes will have an non-symmetric approximations in the equations \eqref{eqn:6} and \eqref{eqn:7}. On the Figure~\ref{fig:2DSolutions_ds} 
+we observe same oscilations as in the 1D numerical solution.
+Dimensional splitting turnes out to be dramaticly unstable and producse the numerical solution as shown on Figure~\ref{fig:2DSolutions_ds} where the time-step was decreased
+twice bellow the CFL condition. In addition, a small ammout of artificial viscosity $0.03 \Delta x U_{xx}$ was added to a scheme. Same as in the 1D case the initial condition
+we chose smooth (Gaussian) function. 
 
 \begin{figure}[h!]
     \centering
